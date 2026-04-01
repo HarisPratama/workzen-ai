@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package ai_service;
+
+service AIService {
+  rpc AnalyzeCV (AnalyzeRequest) returns (AnalyzeResponse) {}
+  rpc MatchCV (MatchRequest) returns (MatchResponse) {}
+}
+
+message AnalyzeRequest {
+  string cv_text = 1;
+}
+
+message AnalyzeResponse {
+  string summary = 1;
+  string recommendation = 2;
+  repeated string skills = 3;
+  repeated string experience_highlights = 4;
+  int32 fit_score = 5;
+}
+
+message MatchRequest {
+  string cv_text = 1;
+  string jd_text = 2;
+}
+
+message MatchResponse {
+  int32 score = 1;
+  repeated string matched_skills = 2;
+  repeated string missing_skills = 3;
+  string explanation = 4;
+  string verdict = 5;
+}
