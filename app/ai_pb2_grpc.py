@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from proto import ai_service_pb2 as proto_dot_ai__service__pb2
+import ai_pb2 as ai__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in proto/ai_service_pb2_grpc.py depends on'
+        + ' but the generated code in ai_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -35,14 +35,14 @@ class AIServiceStub(object):
             channel: A grpc.Channel.
         """
         self.AnalyzeCV = channel.unary_unary(
-                '/ai_service.AIService/AnalyzeCV',
-                request_serializer=proto_dot_ai__service__pb2.AnalyzeRequest.SerializeToString,
-                response_deserializer=proto_dot_ai__service__pb2.AnalyzeResponse.FromString,
+                '/ai.AIService/AnalyzeCV',
+                request_serializer=ai__pb2.AnalyzeCVRequest.SerializeToString,
+                response_deserializer=ai__pb2.CVAnalysisResponse.FromString,
                 _registered_method=True)
-        self.MatchCV = channel.unary_unary(
-                '/ai_service.AIService/MatchCV',
-                request_serializer=proto_dot_ai__service__pb2.MatchRequest.SerializeToString,
-                response_deserializer=proto_dot_ai__service__pb2.MatchResponse.FromString,
+        self.MatchJob = channel.unary_unary(
+                '/ai.AIService/MatchJob',
+                request_serializer=ai__pb2.MatchJobRequest.SerializeToString,
+                response_deserializer=ai__pb2.JobMatchResponse.FromString,
                 _registered_method=True)
 
 
@@ -55,7 +55,7 @@ class AIServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def MatchCV(self, request, context):
+    def MatchJob(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -66,19 +66,19 @@ def add_AIServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'AnalyzeCV': grpc.unary_unary_rpc_method_handler(
                     servicer.AnalyzeCV,
-                    request_deserializer=proto_dot_ai__service__pb2.AnalyzeRequest.FromString,
-                    response_serializer=proto_dot_ai__service__pb2.AnalyzeResponse.SerializeToString,
+                    request_deserializer=ai__pb2.AnalyzeCVRequest.FromString,
+                    response_serializer=ai__pb2.CVAnalysisResponse.SerializeToString,
             ),
-            'MatchCV': grpc.unary_unary_rpc_method_handler(
-                    servicer.MatchCV,
-                    request_deserializer=proto_dot_ai__service__pb2.MatchRequest.FromString,
-                    response_serializer=proto_dot_ai__service__pb2.MatchResponse.SerializeToString,
+            'MatchJob': grpc.unary_unary_rpc_method_handler(
+                    servicer.MatchJob,
+                    request_deserializer=ai__pb2.MatchJobRequest.FromString,
+                    response_serializer=ai__pb2.JobMatchResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'ai_service.AIService', rpc_method_handlers)
+            'ai.AIService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('ai_service.AIService', rpc_method_handlers)
+    server.add_registered_method_handlers('ai.AIService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -99,9 +99,9 @@ class AIService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/ai_service.AIService/AnalyzeCV',
-            proto_dot_ai__service__pb2.AnalyzeRequest.SerializeToString,
-            proto_dot_ai__service__pb2.AnalyzeResponse.FromString,
+            '/ai.AIService/AnalyzeCV',
+            ai__pb2.AnalyzeCVRequest.SerializeToString,
+            ai__pb2.CVAnalysisResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -113,7 +113,7 @@ class AIService(object):
             _registered_method=True)
 
     @staticmethod
-    def MatchCV(request,
+    def MatchJob(request,
             target,
             options=(),
             channel_credentials=None,
@@ -126,9 +126,9 @@ class AIService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/ai_service.AIService/MatchCV',
-            proto_dot_ai__service__pb2.MatchRequest.SerializeToString,
-            proto_dot_ai__service__pb2.MatchResponse.FromString,
+            '/ai.AIService/MatchJob',
+            ai__pb2.MatchJobRequest.SerializeToString,
+            ai__pb2.JobMatchResponse.FromString,
             options,
             channel_credentials,
             insecure,

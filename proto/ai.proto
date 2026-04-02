@@ -1,17 +1,19 @@
 syntax = "proto3";
 
-package ai_service;
+package ai;
+
+option go_package = "workzen-be/internal/grpc/ai";
 
 service AIService {
-  rpc AnalyzeCV (AnalyzeRequest) returns (AnalyzeResponse) {}
-  rpc MatchCV (MatchRequest) returns (MatchResponse) {}
+  rpc AnalyzeCV(AnalyzeCVRequest) returns (CVAnalysisResponse);
+  rpc MatchJob(MatchJobRequest) returns (JobMatchResponse);
 }
 
-message AnalyzeRequest {
+message AnalyzeCVRequest {
   string cv_text = 1;
 }
 
-message AnalyzeResponse {
+message CVAnalysisResponse {
   string summary = 1;
   string recommendation = 2;
   repeated string skills = 3;
@@ -19,12 +21,12 @@ message AnalyzeResponse {
   int32 fit_score = 5;
 }
 
-message MatchRequest {
+message MatchJobRequest {
   string cv_text = 1;
   string jd_text = 2;
 }
 
-message MatchResponse {
+message JobMatchResponse {
   int32 score = 1;
   repeated string matched_skills = 2;
   repeated string missing_skills = 3;

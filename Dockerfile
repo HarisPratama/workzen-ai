@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy proto and generate stubs
 COPY proto/ ./proto/
-RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. proto/ai_service.proto
+RUN python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. proto/ai.proto
 
 # Stage 2: Final lightweight image
 FROM python:3.13-slim
@@ -29,6 +29,7 @@ RUN useradd -m -u 1000 appuser && \
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder --chown=appuser:appuser /build/proto ./proto
+COPY --from=builder --chown=appuser:appuser /build/ai_pb2.py /build/ai_pb2_grpc.py ./app/
 COPY --chown=appuser:appuser . .
 
 USER appuser

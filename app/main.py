@@ -1,10 +1,27 @@
-import threading
+import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .ai import analyze_cv, match_cv_with_jd, CVAnalysis, JobMatchAnalysis
-from .grpc_server import serve_grpc
+from .grpc_server import create_grpc_server
 
-app = FastAPI(title="AI CV Microservice 🚀 (Dual REST & gRPC)")
+logger = logging.getLogger(__name__)
+
+_grpc_server = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global _grpc_server
+    logger.info("Starting gRPC server...")
+    _grpc_server = create_grpc_server()
+    yield
+    logger.info("Shutting down gRPC server...")
+    _grpc_server.stop(grace=10)
+    logger.info("gRPC server stopped.")
+
+
+app = FastAPI(title="AI CV Microservice (Dual REST & gRPC)", lifespan=lifespan)
 
 # --- REST Models ---
 class CVRequest(BaseModel):
@@ -20,18 +37,11 @@ class CVResponse(CVAnalysis):
 class MatchResponse(JobMatchAnalysis):
     pass
 
-# --- Startup Event for gRPC ---
-@app.on_event("startup")
-def start_grpc_server():
-    print("Starting gRPC server thread...")
-    grpc_thread = threading.Thread(target=serve_grpc, daemon=True)
-    grpc_thread.start()
-
 # --- REST Endpoints ---
 @app.get("/")
 def root():
     return {
-        "message": "AI Service Running 🚀",
+        "message": "AI Service Running",
         "modes": ["REST (HTTP 8000)", "gRPC (50051)"]
     }
 
@@ -42,6 +52,8 @@ def analyze(data: CVRequest):
             raise HTTPException(status_code=400, detail="CV text cannot be empty.")
         result = analyze_cv(data.cv_text)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI Analysis failed: {str(e)}")
 
@@ -52,5 +64,7 @@ def match(data: MatchRequest):
             raise HTTPException(status_code=400, detail="Both CV and JD text must be provided.")
         result = match_cv_with_jd(data.cv_text, data.jd_text)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Matching failed: {str(e)}")
