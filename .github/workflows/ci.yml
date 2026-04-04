@@ -47,11 +47,13 @@ jobs:
     - name: Generate gRPC stubs
       run: |
         python -m grpc_tools.protoc -Iproto --python_out=app --grpc_python_out=app proto/ai.proto
+        sed -i 's/^import ai_pb2 as ai__pb2$/from app import ai_pb2 as ai__pb2/' app/ai_pb2_grpc.py
 
     - name: Run Tests
       run: pytest tests/ -v
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        PYTHONPATH: ${{ github.workspace }}
 
   build:
     runs-on: ubuntu-latest
