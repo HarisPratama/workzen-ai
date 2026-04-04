@@ -37,7 +37,7 @@ def analyze_cv(cv_text: str) -> CVAnalysis:
     Analyzes CV text using OpenRouter and returns a structured JSON object.
     """
     return client.chat.completions.create(
-        model="qwen/qwen3.6-plus-preview:free",
+        model="qwen/qwen3.6-plus:free",
         response_model=CVAnalysis,
         messages=[
             {
@@ -56,7 +56,7 @@ def match_cv_with_jd(cv_text: str, jd_text: str) -> JobMatchAnalysis:
     Matches a CV against a Job Description and returns a structured gap analysis.
     """
     return client.chat.completions.create(
-        model="qwen/qwen3.6-plus-preview:free",
+        model="qwen/qwen3.6-plus:free",
         response_model=JobMatchAnalysis,
         messages=[
             {
